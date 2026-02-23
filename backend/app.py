@@ -90,11 +90,16 @@ def create_app():
     
     return app
 
+# if __name__ == '__main__':
+#     app = create_app()
+#     logger.info(f"Starting server on port {config.FLASK_PORT}")
+#     app.run(
+#         debug=(config.FLASK_ENV == 'development'),
+#         port=config.FLASK_PORT,
+#         host='0.0.0.0'
+#     )
+
 if __name__ == '__main__':
     app = create_app()
-    logger.info(f"Starting server on port {config.FLASK_PORT}")
-    app.run(
-        debug=(config.FLASK_ENV == 'development'),
-        port=config.FLASK_PORT,
-        host='0.0.0.0'
-    )
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
