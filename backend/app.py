@@ -21,8 +21,11 @@ def create_app():
     app.config['MAX_CONTENT_LENGTH'] = config.MAX_CONTENT_LENGTH
     
     # CORS
-    CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
-    
+    CORS(app, origins=[
+    "http://localhost:3000",
+    "https://ai-powered-knowledge-assistant.vercel.app/"  # add after deploying frontend
+], supports_credentials=True)
+
     # JWT
     jwt = JWTManager(app)
     
