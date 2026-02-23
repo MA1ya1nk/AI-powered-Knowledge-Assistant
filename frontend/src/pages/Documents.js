@@ -52,8 +52,22 @@ export default function Documents() {
     const processingDocs = documents.filter(d => d.status === 'processing');
     if (processingDocs.length === 0) return;
 
+    let attempts = {};
+
     const interval = setInterval(async () => {
       for (const doc of processingDocs) {
+        attempts[doc.id] = (attempts[doc.id] || 0) + 1;
+
+        // Stop polling after 20 attempts (1 minute)
+        if (attempts[doc.id] > 20) {
+          setDocuments(prev => prev.map(d =>
+            d.id === doc.id && d.status === 'processing'
+              ? { ...d, status: 'error', error_message: 'Processing timeout' }
+              : d
+          ));
+          continue;
+        }
+
         try {
           const res = await documentsAPI.checkStatus(doc.id);
           if (res.data.status !== 'processing') {
