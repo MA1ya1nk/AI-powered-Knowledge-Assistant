@@ -21,11 +21,7 @@ def create_app():
     app.config['MAX_CONTENT_LENGTH'] = config.MAX_CONTENT_LENGTH
     
     # CORS
-    CORS(app, origins=[
-    "http://localhost:3000",
-    "https://ai-powered-knowledge-assistant.vercel.app"  # add after deploying frontend
-], supports_credentials=True)
-
+    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
     # JWT
     jwt = JWTManager(app)
     
@@ -61,6 +57,7 @@ def create_app():
     app.register_blueprint(admin_bp, url_prefix='/admin')
     
     # Health check
+    
     @app.route('/health')
     def health():
         return jsonify({"status": "ok", "message": "Knowledge Assistant API running"})
@@ -90,6 +87,14 @@ def create_app():
     
     return app
 
+
+    @app.after_request
+    def after_request(response):
+       response.headers.add('Access-Control-Allow-Origin', '*')
+       response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+       response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+       return response
+
 # if __name__ == '__main__':
 #     app = create_app()
 #     logger.info(f"Starting server on port {config.FLASK_PORT}")
@@ -101,5 +106,5 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    port = int(os.environ.get('PORT', 10000))
+    port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
